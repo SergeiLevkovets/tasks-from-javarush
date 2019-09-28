@@ -1,9 +1,9 @@
 package simplechat.client;
 
-import com.javarush.task.task30.task3008.Connection;
-import com.javarush.task.task30.task3008.ConsoleHelper;
-import com.javarush.task.task30.task3008.Message;
-import com.javarush.task.task30.task3008.MessageType;
+import simplechat.Connection;
+import simplechat.ConsoleHelper;
+import simplechat.Message;
+import simplechat.MessageType;
 
 import java.io.IOException;
 import java.net.Socket;
@@ -15,7 +15,7 @@ public class Client {
 
     public class SocketThread extends Thread {
 
-        public void run(){
+        public void run() {
             try {
                 Socket socket = new Socket(getServerAddress(), getServerPort());
                 connection = new Connection(socket);
@@ -79,72 +79,72 @@ public class Client {
         }
     }
 
-        public void run() {
-            SocketThread socketThread = getSocketThread();
-            socketThread.setDaemon(true);
-            socketThread.start();
-            synchronized (this) {
-                try {
-                    this.wait();
-                } catch (InterruptedException e) {
-                    ConsoleHelper.writeMessage("Произошла ошибка во время ожидания.");
-                    return;
-                }
-            }
-            if (clientConnected) {
-                ConsoleHelper.writeMessage("Соединение установлено.\n" +
-                        "Для выхода наберите команду 'exit'.");
-            } else {
-                ConsoleHelper.writeMessage("Произошла ошибка во время работы клиента.");
-            }
-            while (clientConnected) {
-                String text = ConsoleHelper.readString();
-                if (text.equals("exit")) {
-                    break;
-                }
-                if (shouldSendTextFromConsole()) {
-                    sendTextMessage(text);
-                }
-            }
-
-        }
-
-        protected String getServerAddress() {
-        ConsoleHelper.writeMessage("Введите адрес: ");
-            return ConsoleHelper.readString();
-        }
-
-        protected int getServerPort() {
-        ConsoleHelper.writeMessage("Введите порт: ");
-            return ConsoleHelper.readInt();
-        }
-
-        protected String getUserName() {
-        ConsoleHelper.writeMessage("Введите ваше имя: ");
-            return ConsoleHelper.readString();
-        }
-
-        protected boolean shouldSendTextFromConsole() {
-            return true;
-        }
-
-        protected SocketThread getSocketThread() {
-            return new SocketThread();
-        }
-
-        protected void sendTextMessage(String text) {
+    public void run() {
+        SocketThread socketThread = getSocketThread();
+        socketThread.setDaemon(true);
+        socketThread.start();
+        synchronized (this) {
             try {
-                connection.send(new Message(MessageType.TEXT, text));
-            } catch (IOException e) {
-                ConsoleHelper.writeMessage("Произошла ошибка!");
-                clientConnected = false;
+                this.wait();
+            } catch (InterruptedException e) {
+                ConsoleHelper.writeMessage("Произошла ошибка во время ожидания.");
+                return;
             }
         }
-
-        public static void main(String[] args) {
-            Client client = new Client();
-            client.run();
+        if (clientConnected) {
+            ConsoleHelper.writeMessage("Соединение установлено.\n" +
+                    "Для выхода наберите команду 'exit'.");
+        } else {
+            ConsoleHelper.writeMessage("Произошла ошибка во время работы клиента.");
+        }
+        while (clientConnected) {
+            String text = ConsoleHelper.readString();
+            if (text.equals("exit")) {
+                break;
+            }
+            if (shouldSendTextFromConsole()) {
+                sendTextMessage(text);
+            }
         }
 
     }
+
+    protected String getServerAddress() {
+        ConsoleHelper.writeMessage("Введите адрес: ");
+        return ConsoleHelper.readString();
+    }
+
+    protected int getServerPort() {
+        ConsoleHelper.writeMessage("Введите порт: ");
+        return ConsoleHelper.readInt();
+    }
+
+    protected String getUserName() {
+        ConsoleHelper.writeMessage("Введите ваше имя: ");
+        return ConsoleHelper.readString();
+    }
+
+    protected boolean shouldSendTextFromConsole() {
+        return true;
+    }
+
+    protected SocketThread getSocketThread() {
+        return new SocketThread();
+    }
+
+    protected void sendTextMessage(String text) {
+        try {
+            connection.send(new Message(MessageType.TEXT, text));
+        } catch (IOException e) {
+            ConsoleHelper.writeMessage("Произошла ошибка!");
+            clientConnected = false;
+        }
+    }
+
+    public static void main(String[] args) {
+        Client client = new Client();
+        client.run();
+    }
+
+}
 

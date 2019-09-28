@@ -72,7 +72,7 @@ public class BotClient extends Client {
     }
 
     public static void main(String[] args) {
-        com.javarush.task.task30.task3008.client.BotClient botClient = new com.javarush.task.task30.task3008.client.BotClient();
+        BotClient botClient = new BotClient();
         botClient.run();
     }
 }
